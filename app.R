@@ -4,7 +4,7 @@ library(leaflet)
 library(dplyr)
 
 # Load data
-data_path <- "/home/joel/sim/baluchistan/results/catchments_with_forcing.csv"
+data_path <- "./catchments_with_forcing.csv"
 
 # Read the CSV and convert to sf
 catchments <- read.csv(data_path)
