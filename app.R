@@ -8,6 +8,7 @@ data_path <- "./catchments_with_forcing.csv"
 
 # Read the CSV and convert to sf
 catchments <- read.csv(data_path)
+catchments['Annual_TP_mm'] = catchments['TP_mmhr'] * 24 * 365
 catchments <- st_as_sf(catchments, wkt = "geometry")  # replace "geometry" with actual geometry column name
 
 # List of variables for dropdown
