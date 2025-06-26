@@ -14,7 +14,7 @@ catchments <- st_as_sf(catchments, wkt = "geometry")  # replace "geometry" with 
 # List of variables for dropdown
 variables <- c('LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms', 
                'TP_mmhr', 'Sf_mmhr', 'Rf_mmhr', 'Tsurf', 'LWout', 'LWnet', 'SWnet', 
-               'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly')
+               'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly', 'Annual_TP_mm')
 
 # UI
 ui <- fluidPage(
