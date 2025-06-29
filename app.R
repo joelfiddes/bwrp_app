@@ -61,9 +61,6 @@ ui <- fluidPage(
 # Server
 server <- function(input, output, session) {
 
-  output$map <- renderLeaflet({
-    req(input$selected_var)
-
 output$map <- renderLeaflet({
   req(input$selected_var)
   
