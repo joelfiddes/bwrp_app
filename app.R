@@ -11,10 +11,14 @@ catchments <- read.csv(data_path)
 catchments['Annual_TP_mm'] = catchments['TP_mmhr'] * 24 * 365
 catchments <- st_as_sf(catchments, wkt = "geometry")  # replace "geometry" with actual geometry column name
 
+catchments$PET_mm_annual_priestly <- catchments$PET_mm_hr_priestly * 8760
+catchments$PET_mm_annual_penman   <- catchments$PET_mm_hr_penman   * 8760
+
+
 # List of variables for dropdown
 variables <- c('LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms', 
                'TP_mmhr', 'Sf_mmhr', 'Rf_mmhr', 'Tsurf', 'LWout', 'LWnet', 'SWnet', 
-               'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly', 'Annual_TP_mm')
+               'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly', 'Annual_TP_mm', 'PET_mm_annual_priestly', 'PET_mm_annual_penman')
 
 # UI
 ui <- fluidPage(
