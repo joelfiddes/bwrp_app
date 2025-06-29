@@ -64,22 +64,31 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     req(input$selected_var)
 
-    pal <- colorNumeric("viridis", domain = catchments[[input$selected_var]], na.color = "transparent")
+output$map <- renderLeaflet({
+  req(input$selected_var)
+  
+  pal <- colorNumeric("viridis", domain = catchments[[input$selected_var]], na.color = "transparent")
 
-    leaflet(catchments) %>%
-      addProviderTiles("CartoDB.Positron") %>%
-      addPolygons(
-        fillColor = ~pal(get(input$selected_var)),
-        fillOpacity = 0.8,
-        color = "#444444",
-        weight = 1,
-        popup = ~paste0(input$selected_var, ": ", get(input$selected_var))
-      ) %>%
-      addLegend("bottomright", pal = pal, values = ~get(input$selected_var),
-                title = input$selected_var)
-  })
+  leaflet(catchments) %>%
+    addProviderTiles("CartoDB.Positron") %>%
+    addPolygons(
+      fillColor = ~pal(.data[[input$selected_var]]),
+      fillOpacity = 0.8,
+      color = "#444444",
+      weight = 1,
+      popup = ~paste0(variable_labels[[input$selected_var]], ": ", round(.data[[input$selected_var]], 2))
+    ) %>%
+    addLegend("bottomright", pal = pal, values = ~.data[[input$selected_var]],
+              title = variable_labels[[input$selected_var]])
+})
 
 }
 
 # Run app
 shinyApp(ui, server)
+
+
+
+
+
+
