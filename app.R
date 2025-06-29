@@ -18,7 +18,7 @@ variables <- c('LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms',
 
 # UI
 ui <- fluidPage(
-  titlePanel("Catchment Forcing Explorer"),
+  titlePanel("Baluchistan Climate Explorer"),
   sidebarLayout(
     sidebarPanel(
       selectInput("selected_var", "Select Forcing Variable:", choices = variables)
