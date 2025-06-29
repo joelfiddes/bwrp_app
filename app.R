@@ -15,6 +15,8 @@ catchments$PET_mm_annual_penman   <- catchments$PET_mm_hr_penman   * 8760
 # Convert to sf — ensure 'geometry' column exists
 catchments <- st_as_sf(catchments, wkt = "geometry", crs = 4326)
 
+
+
 # List of variables and labels
 variables <- c(
   'LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms', 
@@ -64,22 +66,23 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   output$map <- renderLeaflet({
     req(input$selected_var)
-
+    
     pal <- colorNumeric("viridis", domain = catchments[[input$selected_var]], na.color = "transparent")
 
     leaflet(catchments) %>%
       addProviderTiles("CartoDB.Positron") %>%
       addPolygons(
-        fillColor = ~pal(.data[[input$selected_var]]),
+        fillColor = ~pal(get(input$selected_var)),
         fillOpacity = 0.8,
         color = "#444444",
         weight = 1,
-        popup = ~paste0(variable_labels[[input$selected_var]], ": ", round(.data[[input$selected_var]], 2))
+        popup = ~paste0(variable_labels[[input$selected_var]], ": ", round(get(input$selected_var), 2))
       ) %>%
-      addLegend("bottomright", pal = pal, values = ~.data[[input$selected_var]],
+      addLegend("bottomright", pal = pal, values = catchments[[input$selected_var]],
                 title = variable_labels[[input$selected_var]])
   })
 }
+
 
 # Run the app
 shinyApp(ui, server)
