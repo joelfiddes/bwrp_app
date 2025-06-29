@@ -8,19 +8,22 @@ data_path <- "./catchments_with_forcing.csv"
 
 # Read the CSV and convert to sf
 catchments <- read.csv(data_path)
-catchments['Annual_TP_mm'] = catchments['TP_mmhr'] * 24 * 365
-catchments <- st_as_sf(catchments, wkt = "geometry")  # replace "geometry" with actual geometry column name
-
+catchments$Annual_TP_mm <- catchments$TP_mmhr * 24 * 365
 catchments$PET_mm_annual_priestly <- catchments$PET_mm_hr_priestly * 8760
 catchments$PET_mm_annual_penman   <- catchments$PET_mm_hr_penman   * 8760
 
+# Convert to sf — ensure 'geometry' column exists
+catchments <- st_as_sf(catchments, wkt = "geometry", crs = 4326)
 
-# List of variables for dropdown
-variables <- c('LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms', 
-               'TP_mmhr', 'Sf_mmhr', 'Rf_mmhr', 'Tsurf', 'LWout', 'LWnet', 'SWnet', 
-               'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly', 'Annual_TP_mm', 'PET_mm_annual_priestly', 'PET_mm_annual_penman')
-               
-               variable_labels <- c(
+# List of variables and labels
+variables <- c(
+  'LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms', 
+  'TP_mmhr', 'Sf_mmhr', 'Rf_mmhr', 'Tsurf', 'LWout', 'LWnet', 'SWnet', 
+  'Rnet_Wm2', 'Rnet_MJm2hr', 'PET_mm_hr_penman', 'delta', 'PET_mm_hr_priestly', 
+  'Annual_TP_mm', 'PET_mm_annual_priestly', 'PET_mm_annual_penman'
+)
+
+variable_labels <- c(
   'LWin' = "Incoming Longwave Radiation [W/m²]",
   'SWin' = "Incoming Shortwave Radiation [W/m²]",
   'Tair_C' = "Air Temperature [°C]",
@@ -43,14 +46,13 @@ variables <- c('LWin', 'SWin', 'Tair_C', 'RH', 'wind_ms',
   'PET_mm_annual_penman' = "Annual PET (Penman) [mm/year]"
 )
 
-
 # UI
 ui <- fluidPage(
   titlePanel("Baluchistan Climate Explorer"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("selected_var", "Select Forcing Variable:", choices = variable_labels)
-
+      selectInput("selected_var", "Select Forcing Variable:",
+                  choices = setNames(variables, variable_labels))  # Named vector: labels -> values
     ),
     mainPanel(
       leafletOutput("map", height = "800px")
@@ -60,32 +62,25 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output, session) {
+  output$map <- renderLeaflet({
+    req(input$selected_var)
 
-output$map <- renderLeaflet({
-  req(input$selected_var)
-  
-  pal <- colorNumeric("viridis", domain = catchments[[input$selected_var]], na.color = "transparent")
+    pal <- colorNumeric("viridis", domain = catchments[[input$selected_var]], na.color = "transparent")
 
-  leaflet(catchments) %>%
-    addProviderTiles("CartoDB.Positron") %>%
-    addPolygons(
-      fillColor = ~pal(.data[[input$selected_var]]),
-      fillOpacity = 0.8,
-      color = "#444444",
-      weight = 1,
-      popup = ~paste0(variable_labels[[input$selected_var]], ": ", round(.data[[input$selected_var]], 2))
-    ) %>%
-    addLegend("bottomright", pal = pal, values = ~.data[[input$selected_var]],
-              title = variable_labels[[input$selected_var]])
-})
-
+    leaflet(catchments) %>%
+      addProviderTiles("CartoDB.Positron") %>%
+      addPolygons(
+        fillColor = ~pal(.data[[input$selected_var]]),
+        fillOpacity = 0.8,
+        color = "#444444",
+        weight = 1,
+        popup = ~paste0(variable_labels[[input$selected_var]], ": ", round(.data[[input$selected_var]], 2))
+      ) %>%
+      addLegend("bottomright", pal = pal, values = ~.data[[input$selected_var]],
+                title = variable_labels[[input$selected_var]])
+  })
 }
 
-# Run app
+# Run the app
 shinyApp(ui, server)
-
-
-
-
-
 
